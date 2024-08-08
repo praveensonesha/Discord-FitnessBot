@@ -2,14 +2,18 @@
 
 This is a Discord bot that integrates with Google Generative AI, specifically the Gemini model, to provide conversational capabilities. Gemini is Google's largest and most capable AI model. The bot can respond to user messages, maintain conversation history, and perform various commands. 
 
+
 ## Features
 
-- Responds to user messages using Google Generative AI
-- Maintains conversation history for each user
-- Supports slash commands for user interactions
-- Clears conversation history using the `/clear` command
-- Saves conversation and sends it to the user's inbox using the `/save` command
-- Automatically changes the bot's presence status every 30 seconds
+- **Respond to User Messages:** Uses Google Generative AI to respond intelligently to user messages.
+- **Conversation History:** Maintains and manages conversation history for each user.
+- **Slash Commands:**
+  - `/clear`: Clears the conversation history for the current user.
+  - `/save`: Saves the conversation history and sends it to the user's inbox.
+  - `/logs`: Logs important events and interactions into a database.
+  - `/analyze`: Analyzes the user's workout data and sends a detailed PDF report via DM.
+- **Presence Status:** Automatically changes the bot's presence status every 30 seconds.
+- **Workout Reminders:** Sends reminders to users if they miss their workout sessions, offering motivation to stay on track.
 
 ## Screenshots
 
