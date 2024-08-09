@@ -1,18 +1,13 @@
 const cron = require('node-cron');
 const mysql = require('mysql2/promise');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const dbConfig = require('./dbConfig');
 
-const dbConfig = {
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'fitness_coach',
-};
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 async function getUsersWithoutWorkout() {
-  const connection = await mysql.createConnection(dbConfig);
+  const connection = await mysql.createConnection(dbConfig.fitness_coach);
   try {
     const [rows] = await connection.execute(`
       SELECT DISTINCT user_id
@@ -37,7 +32,7 @@ async function getUsersWithoutWorkout() {
 }
 
 async function getUserHistory(userId) {
-  const connection = await mysql.createConnection(dbConfig);
+  const connection = await mysql.createConnection(dbConfig.fitness_coach);
   try {
     const [rows] = await connection.execute(`
       SELECT message
@@ -66,7 +61,7 @@ async function generateMotivationMessage(userHistory) {
 }
 
 // async function markUserAsUnreachable(userId) {
-//   const connection = await mysql.createConnection(dbConfig);
+//const connection = await mysql.createConnection(dbConfig.fitness_coach);
 //   try {
 //     await connection.execute(
 //       'INSERT INTO chats (user_id, message, is_log) VALUES (?, ?, ?)',

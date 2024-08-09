@@ -3,17 +3,12 @@ const { Client } = require('discord.js');
 const axios = require('axios');
 const mysql = require('mysql2');
 const { collectUserDetails } = require('../forms/userDetailsForm');
+const dbConfig = require('./dbConfig');
 
-// Create a connection pool
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'fitness_coach',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+
+// Create a connection pool using primary credentials
+const pool = mysql.createPool(dbConfig.fitness_coach);
+
 
 const checkIncompleteUserrrr = async (client) => {
   try {

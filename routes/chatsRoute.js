@@ -1,18 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
+const dbConfig = require('./dbConfig'); 
 
+
+const pool = mysql.createPool(dbConfig.fitness_coach);
 router.use(express.json());
-
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'fitness_coach',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
 
 router.get('/chat', (req, res) => {
     const userId = req.query.userId; // assuming userId is passed as a query parameter
