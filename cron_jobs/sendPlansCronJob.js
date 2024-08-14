@@ -41,20 +41,20 @@ const sendWeeklyPlans = async (client) => {
   }
 };
 
-// function scheduleWeeklyPlans(client) {
-//   // Schedule the cron job to run every Monday at 9 AM
-//   cron.schedule('0 9 * * 1', async () => {
-//     console.log('Running weekly plans cron job');
-//     await sendWeeklyPlans(client);
-//   });
-// }
-
 function scheduleWeeklyPlans(client) {
-    // Schedule the cron job to run every 5 minutes for testing
-    cron.schedule('*/5 * * * *', async () => {
-      console.log('Running weekly plans cron job (testing every 5 minutes)');
-      await sendWeeklyPlans(client);
-    });
-  }
+  // Schedule the cron job to run every Monday at 9 AM
+  cron.schedule('0 9 * * 1', async () => {
+    console.log('Running weekly plans cron job');
+    await sendWeeklyPlans(client);
+  });
+}
+
+// function scheduleWeeklyPlans(client) {
+//     // Schedule the cron job to run every 5 minutes for testing
+//     cron.schedule('*/5 * * * *', async () => {
+//       console.log('Running weekly plans cron job (testing every 5 minutes)');
+//       await sendWeeklyPlans(client);
+//     });
+//   }
 
 module.exports = scheduleWeeklyPlans;
