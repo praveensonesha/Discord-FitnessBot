@@ -148,7 +148,25 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
     return;
   }  
+
+
+  if (interaction.commandName === 'faq') {
+    try {
+      const query = interaction.options.getString('query');
+      const response = await axios.post('http://localhost:3000/chats/qna', { query });
+      await interaction.reply(response.data);
+    } catch (error) {
+      console.error('Error handling /faq command:', error);
+      try {
+        await interaction.reply('Sorry, something went wrong while processing your FAQ query.');
+      } catch (replyError) {
+        console.error('Error sending error message:', replyError);
+      }
+    }
+    return;
+  }
 });
+
 
 client.on(Events.GuildMemberAdd,handleNewMemberEvent)
 

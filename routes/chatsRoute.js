@@ -2,7 +2,12 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
 const dbConfig = require('../dbConfig');
+const { ChromaClient } = require('chromadb');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 const fitnessCoachPool = mysql.createPool(dbConfig.fitness_coach);
 router.use(express.json());
@@ -81,6 +86,43 @@ router.post('/', (req, res) => {
     });
 });
 
+router.post('/qna',async(req,res)=>{
+    const payload = req.body;
+    const {phone,query} = payload;
+    console.log(phone);
+    try {
+        // Execute the query
+        const client = new ChromaClient();
+        const collection = await client.getOrCreateCollection({
+            name: "my_collection",
+        });
+      
+        const results = await collection.query({
+            queryTexts: [`${query}`], // Chroma will embed this for you
+            // queryTexts: ["Will the products be safe to use?"], // Chroma will embed this for you
+            nResults: 4, // How many results to return
+        });
+      
+        console.log(results.documents);
+        const prompt = `As a customer support representative, provide a helpful and friendly response based on the information from the provided document. Here are the document results: Document: ${results.documents}. The user has asked the following question: "${query}". Based on the document and available information, construct a relevant and accurate response to the user's query. If the document doesn't directly answer the query, politely explain what the document covers and suggest any alternative actions or information that might be helpful to the user.`
+        console.log(prompt);
+        const report = await model.generateContent(prompt);
+        console.log("text",report.response.text);
+        
 
+        res.status(200).send(report.response.text());
+
+       
+    } catch (error) {
+        console.error('Error querying the database:', error);
+        console.log(error)
+            res.status(500).send({
+            success:false,
+            message:'Error in userQuery',
+            error ,
+            });
+    }
+    
+});
 
 module.exports = router;
