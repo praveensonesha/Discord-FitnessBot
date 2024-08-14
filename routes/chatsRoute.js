@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
-const dbConfig = require('./dbConfig'); 
+const dbConfig = require('../dbConfig');
 
 
-const pool = mysql.createPool(dbConfig.fitness_coach);
+const fitnessCoachPool = mysql.createPool(dbConfig.fitness_coach);
 router.use(express.json());
 
 router.get('/chat', (req, res) => {
@@ -15,7 +15,7 @@ router.get('/chat', (req, res) => {
 
         const sql = 'SELECT message,attachments FROM chats WHERE user_id = ? and channel_id = ?';
     
-        pool.query(sql, [userId,channelId], (error, results) => {
+        fitnessCoachPool.query(sql, [userId,channelId], (error, results) => {
             if (error) {
                 console.error('Error executing query:', error);
                 res.status(500).json({ message: 'Internal server error' });
@@ -29,7 +29,7 @@ router.get('/chat', (req, res) => {
 
         const sql = 'SELECT message FROM chats WHERE user_id = ?';
     
-        pool.query(sql, [userId], (error, results) => {
+        fitnessCoachPool.query(sql, [userId], (error, results) => {
             if (error) {
                 console.error('Error executing query:', error);
                 res.status(500).json({ message: 'Internal server error' });
@@ -43,7 +43,7 @@ router.get('/chat', (req, res) => {
 
         const sql = 'SELECT author,created_at,message FROM chats WHERE channel_id = ?';
     
-        pool.query(sql, [channelId], (error, results) => {
+        fitnessCoachPool.query(sql, [channelId], (error, results) => {
             if (error) {
                 console.error('Error executing query:', error);
                 res.status(500).json({ message: 'Internal server error' });
@@ -71,7 +71,7 @@ router.post('/', (req, res) => {
         obj.is_log || 0 // Default to 0 if is_log is not provided
     ]);  
 
-    pool.query(sql, [values], (error, results) => {
+    fitnessCoachPool.query(sql, [values], (error, results) => {
         if (error) {
             console.error('Error executing query:', error);
             res.status(500).json({ message: 'Internal server error' });

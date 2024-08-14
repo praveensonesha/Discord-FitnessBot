@@ -1,0 +1,66 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+PRODID:adamgibbons/ics
+METHOD:PUBLISH
+X-PUBLISHED-TTL:PT1H
+BEGIN:VEVENT
+UID:d06MIfqNvJye0UuiN-2rb
+SUMMARY:Your workout Plan
+DTSTAMP:20240813T115819Z
+DTSTART:20240813T033000Z
+DESCRIPTION:## Personalized Nutrition Plan for Praveen Sonesha\n\n**Goal:**
+	 Weight loss and bicep development.\n\n**Dietary Preferences:** Veg Indian
+	\n\n**Allergies:** None\n\n**Daily Routine:** Walking\, office work\, slee
+	p\n\n**Exercise Preferences:** Walking\, cycling\n\n**Note:** This plan is
+	 a starting point and may need to be adjusted based on your individual nee
+	ds and response. Consult with a registered dietitian or nutritionist for p
+	ersonalized advice.\n\n### Meal Plan\n\n**Breakfast (7:00 AM - 8:00 AM)**\
+	n\n* **Option 1:** 2 cups oats with 1/2 cup low-fat milk\, 1/4 cup mixed b
+	erries\, and 1 tbsp chopped nuts (Provides fiber\, protein\, and healthy f
+	ats)\n* **Option 2:** 1 cup vegetable poha with 1 tbsp oil\, chopped onion
+	s\, tomatoes\, and green chilies (Provides fiber and complex carbohydrates
+	)\n* **Option 3:** 2 boiled eggs with 1 slice whole wheat toast and 1/2 av
+	ocado (Provides protein and healthy fats)\n\n**Mid-Morning Snack (10:00 AM
+	 - 11:00 AM)**\n\n* **Option 1:** 1 cup fruit salad with 1/4 cup plain yog
+	urt (Provides fiber\, vitamins\, and protein)\n* **Option 2:** 1 handful o
+	f almonds or walnuts (Provides healthy fats and protein)\n* **Option 3:** 
+	1 cup vegetable soup (Provides fiber and vitamins)\n\n**Lunch (1:00 PM - 2
+	:00 PM)**\n\n* **Option 1:** 1 cup brown rice with 1 cup vegetable curry a
+	nd 1 cup lentil soup (Provides complex carbohydrates\, protein\, and fiber
+	)\n* **Option 2:** 1 cup vegetable biryani with 1 cup raita (Provides comp
+	lex carbohydrates\, protein\, and fiber)\n* **Option 3:** 1 cup paneer tik
+	ka masala with 2 rotis (Provides protein and healthy fats)\n\n**Afternoon 
+	Snack (4:00 PM - 5:00 PM)**\n\n* **Option 1:** 1 cup mixed greens salad wi
+	th 1 tbsp chickpeas\, cucumber\, tomatoes\, and vinaigrette dressing (Prov
+	ides fiber\, vitamins\, and minerals)\n* **Option 2:** 1 cup vegetable smo
+	othie with 1 scoop protein powder (Provides protein\, vitamins\, and miner
+	als)\n* **Option 3:** 1 cup low-fat yogurt with 1/4 cup chopped fruit (Pro
+	vides protein\, calcium\, and fiber)\n\n**Dinner (8:00 PM - 9:00 PM)**\n\n
+	* **Option 1:** 1 cup lentil stew with 1 cup quinoa and 1 cup mixed greens
+	 salad (Provides protein\, fiber\, and complex carbohydrates)\n* **Option 
+	2:** 1 cup vegetable pulao with 1 cup vegetable curry (Provides complex ca
+	rbohydrates\, protein\, and fiber)\n* **Option 3:** 1 cup chana masala wit
+	h 2 rotis (Provides protein\, fiber\, and healthy fats)\n\n**Before Bed Sn
+	ack (Optional) (10:00 PM - 11:00 PM)**\n\n* 1 cup warm milk with 1 tsp hon
+	ey (Provides protein and calcium)\n\n### Nutritional Information\n\n* **Ca
+	lories:** 1\,800 - 2\,000\n* **Protein:** 100-120 grams\n* **Carbohydrates
+	:** 200-250 grams\n* **Fats:** 50-70 grams\n\n### Additional Tips\n\n* **H
+	ydration:** Drink plenty of water throughout the day.\n* **Portion Control
+	:** Be mindful of your portion sizes.\n* **Cook at Home:** Cooking meals a
+	t home allows you to control ingredients and portion sizes.\n* **Limit Pro
+	cessed Foods:** Processed foods are often high in calories\, sugar\, and u
+	nhealthy fats.\n* **Read Food Labels:** Pay attention to the serving size 
+	and nutritional information on food labels.\n* **Listen to Your Body:** Pa
+	y attention to hunger and fullness cues.\n* **Incorporate Exercise:** Regu
+	lar exercise is essential for weight loss and overall health.\n\n### Consi
+	derations for Bicep Development\n\n* **Increase Protein Intake:** Aim for 
+	1.2-1.6 grams of protein per kilogram of body weight.\n* **Strength Traini
+	ng:** Include strength training exercises for biceps 2-3 times per week.\n
+	* **Rest and Recovery:** Allow sufficient time for your muscles to recover
+	 between workouts.\n\n**Remember:** This is a sample plan and may need to 
+	be adjusted based on your individual needs and preferences. Consult with a
+	 registered dietitian or nutritionist for personalized guidance. \n
+DURATION:PT1H
+END:VEVENT
+END:VCALENDAR

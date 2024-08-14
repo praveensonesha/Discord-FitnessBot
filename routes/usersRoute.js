@@ -1,31 +1,29 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
-const dbConfig = require('./dbConfig');
+const dbConfig = require('../dbConfig');
 
 router.use(express.json());
-const pool = mysql.createPool(dbConfig.fitness_coach);
+const fitnessCoachPool = mysql.createPool(dbConfig.fitness_coach);
 
 router.post('/addUser', (req, res) => {
     const { user_id, username } = req.body;
-  
+
     if (!user_id || !username) {
-      return res.status(400).json({ error: 'User ID and username are required' });
+        return res.status(400).json({ error: 'User ID and username are required' });
     }
-  
+
     // Insert user into the database
     const sql = 'INSERT INTO profile (user_id, username) VALUES (?, ?)';
-    pool.query(sql, [user_id, username], (error, results) => {
-      if (error) {
-        console.error('Error inserting user into database:', error);
-        return res.status(500).json({ error: 'Internal server error' });
-      }
-  
-      res.status(200).json({ message: 'User added successfully' });
-    });
-  });
-  
+    fitnessCoachPool.query(sql, [user_id, username], (error, results) => {
+        if (error) {
+            console.error('Error inserting user into database:', error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
 
+        res.status(200).json({ message: 'User added successfully' });
+    });
+});
 
 router.post('/userDetails', (req, res) => {
     const details = req.body;
@@ -34,9 +32,10 @@ router.post('/userDetails', (req, res) => {
     const sql = `
         INSERT INTO users (
             user_id, username, email, full_name, mobile_no, age, height, weight, goal, 
-            daily_routine, allergies, diet_preferences, exercise_preferences
+            daily_routine, allergies, diet_preferences, exercise_preferences,
+            is_workout_plan_subscribe, is_nutrition_plan_subscribe
         ) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE 
             username = VALUES(username), 
             email = VALUES(email), 
@@ -49,7 +48,9 @@ router.post('/userDetails', (req, res) => {
             daily_routine = VALUES(daily_routine), 
             allergies = VALUES(allergies), 
             diet_preferences = VALUES(diet_preferences), 
-            exercise_preferences = VALUES(exercise_preferences)
+            exercise_preferences = VALUES(exercise_preferences),
+            is_workout_plan_subscribe = VALUES(is_workout_plan_subscribe),
+            is_nutrition_plan_subscribe = VALUES(is_nutrition_plan_subscribe)
     `;
 
     const values = [
@@ -65,10 +66,12 @@ router.post('/userDetails', (req, res) => {
         details.daily_routine,
         JSON.stringify(details.allergies),
         JSON.stringify(details.diet_preferences),
-        JSON.stringify(details.exercise_preferences)
+        JSON.stringify(details.exercise_preferences),
+        details.is_workout_plan_subscribe,
+        details.is_nutrition_plan_subscribe
     ];
 
-    pool.query(sql, values, (error, results) => {
+    fitnessCoachPool.query(sql, values, (error, results) => {
         if (error) {
             console.error('Error executing query:', error);
             res.status(500).json({ message: 'Internal server error' });
@@ -78,4 +81,4 @@ router.post('/userDetails', (req, res) => {
     });
 });
 
-  module.exports = router;
+module.exports = router;

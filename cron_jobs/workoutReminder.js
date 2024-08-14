@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 const mysql = require('mysql2/promise');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const dbConfig = require('./dbConfig');
+const dbConfig = require('../dbConfig');
 
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);

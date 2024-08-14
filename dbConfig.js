@@ -10,7 +10,7 @@ module.exports = {
       queueLimit: 0
     },
     cube_club: {
-      host: 'root',
+      host: 'localhost',
       user: 'root',
       password: 'root',
       database: 'cube_club',

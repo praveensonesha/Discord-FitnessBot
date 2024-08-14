@@ -10,7 +10,16 @@ const { ConversationManager } = require('./conversationManager');
 const { CommandHandler } = require('./commandHandler');
 const processConversation = require("./processConversation")
 const async = require('async');
+const { handleNewMemberEvent } = require('./events/newMember');
+const checkIncompleteUsers = require('./cron_jobs/checkIncompleteUsers');
 const workoutReminder = require('./cron_jobs/workoutReminder');
+const checkUserPurchases = require('./cron_jobs/checkPurchases');
+const scheduleWeeklyPlans = require('./cron_jobs/sendPlansCronJob');
+const generateWorkoutPlan = require('./prompts/generateWorkoutPlan');
+const generateNutritionPlan = require('./prompts/generateNutritionPlan');
+const { handleModal } = require('./forms/handleModal');  // Import the handleModal function
+
+
 
 
 const app = express();
@@ -21,8 +30,7 @@ const botToken = process.env.DISCORD_BOT_TOKEN
 const mysql = require('mysql');
 const chatsRoute = require("./routes/chatsRoute");
 const usersRoute = require("./routes/usersRoute")
-const { handleNewMemberEvent } = require('./events/newMember');
-const checkIncompleteUsers = require('./cron_jobs/checkIncompleteUsers');
+
 app.use('/chats',chatsRoute)
 app.use('/users',usersRoute)
 app.get('/', (req, res) => {
@@ -48,8 +56,23 @@ const conversationManager = new ConversationManager();
 const commandHandler = new CommandHandler();
 const conversationQueue = async.queue(processConversation, 1);
 
+
+
+//crons jobs
 workoutReminder(client);
 checkIncompleteUsers(client);
+checkUserPurchases(); 
+scheduleWeeklyPlans(client);
+
+// generateWorkoutPlan();
+// generateNutritionPlan();
+
+// client.on('interactionCreate', async interaction => {
+//   if (interaction.type === InteractionType.ModalSubmit) {
+//       await handleModal(interaction);  // Call handleModal when a modal is submitted
+//   }
+// });
+
 
 const activities = [
   { name: 'Assisting users', type: ActivityType.Playing },
