@@ -3,24 +3,19 @@ const { Client } = require('discord.js');
 const axios = require('axios');
 const mysql = require('mysql2');
 const { collectUserDetails } = require('../forms/userDetailsForm');
+const dbConfig = require('../dbConfig');
 
-// Create a connection pool
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'fitness_coach',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+
+// Create a connection fitnessCoachPool using primary credentials
+const fitnessCoachPool = mysql.createPool(dbConfig.fitness_coach);
+
 
 const checkIncompleteUserrrr = async (client) => {
   try {
     console.log('Checking incomplete users...');
     const sql = 'SELECT * FROM profile WHERE is_completed = 0';
     
-    pool.query(sql, async (error, results) => {
+    fitnessCoachPool.query(sql, async (error, results) => {
       if (error) {
         console.error('Error fetching incomplete users:', error);
         return;

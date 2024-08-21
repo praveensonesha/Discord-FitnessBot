@@ -18,6 +18,18 @@ const commands = [
         .setDescription('Your workout stats')
         .setRequired(true))
     .setDMPermission(true),
+  new SlashCommandBuilder()
+    .setName('score')
+    .setDescription('Get your fitness Score.')
+    .setDMPermission(true),
+  new SlashCommandBuilder()
+    .setName('faq')
+    .setDescription('Ask a frequently asked question.')
+    .addStringOption(option =>
+      option.setName('query')
+        .setDescription('Your question')
+        .setRequired(true))
+    .setDMPermission(true),
 ].map(command => command.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN);
