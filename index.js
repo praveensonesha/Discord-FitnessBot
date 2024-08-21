@@ -149,24 +149,28 @@ client.on(Events.InteractionCreate, async (interaction) => {
     return;
   }  
 
+  if (interaction.commandName === 'score') {
+    await commandHandler.scoreCommand(interaction);
+  }
 
   if (interaction.commandName === 'faq') {
     try {
+      await interaction.deferReply(); 
       const query = interaction.options.getString('query');
       const response = await axios.post('http://localhost:3000/chats/qna', { query });
-      await interaction.reply(response.data);
+      await interaction.editReply(response.data);
     } catch (error) {
       console.error('Error handling /faq command:', error);
       try {
-        await interaction.reply('Sorry, something went wrong while processing your FAQ query.');
+        await interaction.editReply('Sorry, something went wrong while processing your FAQ query.');
       } catch (replyError) {
         console.error('Error sending error message:', replyError);
       }
     }
     return;
   }
-});
 
+});
 
 client.on(Events.GuildMemberAdd,handleNewMemberEvent)
 
@@ -329,6 +333,5 @@ client.on(Events.MessageCreate, async (message) => {
     // await message.reply('Sorry, something went wrong!');
   }
 });
-
 
 client.login(process.env.DISCORD_BOT_TOKEN);

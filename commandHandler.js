@@ -1,5 +1,6 @@
 const { ChannelType } = require('discord.js');
-const processConversation = require("./processConversation")
+const processConversation = require("./processConversation");
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const async = require('async');
 class CommandHandler {
   constructor() {
@@ -94,8 +95,58 @@ class CommandHandler {
       await interaction.reply({ content: 'Failed to log your workout. Please try again later.', ephemeral: true });
     }
   }
-}
 
- 
+  async scoreCommand(interaction) {
+    const userId = interaction.user.id;
+    try {
+        // Make sure to include the user_id as a query parameter
+        const response = await fetch(`http://localhost:3000/users/score`,{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_id: userId
+          }),
+        });
+
+        if (!response.ok) {
+            console.log(response);
+            throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+        }
+
+        let userData;
+        try {
+            userData = await response.json();
+        } catch (jsonError) {
+            const text = await response.text();
+            console.error('Response is not valid JSON:', text);
+            throw new Error('Failed to parse JSON from server response');
+        }
+
+        if (userData) {
+            const { momentum_score, current_streak, max_streak } = userData;
+
+            // Generate a motivating message using Google Generative AI
+            const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+            const prompt = `Here is the performance summary for the user:
+            - **Momentum Score:** ${momentum_score}
+            - **Current Streak:** ${current_streak} days
+            - **Maximum Streak:** ${max_streak} days
+            
+            Please provide this information in a clear and motivating format with an encouraging message.`;            
+            const result = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" }).generateContent([prompt]);
+            const messageContent = result.response.text();
+            await interaction.reply({ content: messageContent, ephemeral: true });
+        } else {
+            await interaction.reply({ content: 'User data not found. Please ensure you are registered and have logged activities.', ephemeral: true });
+        }
+    } catch (error) {
+        console.error('Error retrieving user score:', error);
+        await interaction.reply({ content: 'Failed to retrieve your score. Please try again later.', ephemeral: true });
+    }
+  }
+
+}
 
 module.exports.CommandHandler = CommandHandler;

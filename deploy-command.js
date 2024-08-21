@@ -18,7 +18,11 @@ const commands = [
         .setDescription('Your workout stats')
         .setRequired(true))
     .setDMPermission(true),
-    new SlashCommandBuilder()
+  new SlashCommandBuilder()
+    .setName('score')
+    .setDescription('Get your fitness Score.')
+    .setDMPermission(true),
+  new SlashCommandBuilder()
     .setName('faq')
     .setDescription('Ask a frequently asked question.')
     .addStringOption(option =>

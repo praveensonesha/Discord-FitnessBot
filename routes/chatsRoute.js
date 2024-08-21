@@ -9,6 +9,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
+
 const fitnessCoachPool = mysql.createPool(dbConfig.fitness_coach);
 router.use(express.json());
 
@@ -60,7 +61,6 @@ router.get('/chat', (req, res) => {
     }
 });
 
-
 router.post('/', (req, res) => {
     const data = req.body; 
     console.log(data)
@@ -92,7 +92,7 @@ router.post('/qna',async(req,res)=>{
     console.log(phone);
     try {
         // Execute the query
-        const client = new ChromaClient();
+        const client = new ChromaClient({path:'https://chroma-latest-gzr9.onrender.com'});
         const collection = await client.getOrCreateCollection({
             name: "my_collection",
         });
@@ -104,7 +104,8 @@ router.post('/qna',async(req,res)=>{
         });
       
         console.log(results.documents);
-        const prompt = `As a customer support representative, provide a helpful and friendly response based on the information from the provided document. Here are the document results: Document: ${results.documents}. The user has asked the following question: "${query}". Based on the document and available information, construct a relevant and accurate response to the user's query. If the document doesn't directly answer the query, politely explain what the document covers and suggest any alternative actions or information that might be helpful to the user.`
+        // const prompt = `As a customer support representative, provide a helpful and friendly response based on the information from the provided document. Here are the document results: Document: ${results.documents}. The user has asked the following question: "${query}". Based on the document and available information, construct a relevant and accurate response to the user's query. If the document doesn't directly answer the query, politely explain what the document covers and suggest any alternative actions or information that might be helpful to the user.`
+        const prompt = `As a customer support representative, provide a helpful, empathetic, and friendly response based on the information from the provided document. Here are the document results: Document: ${results.documents}. The user has asked the following question: "${query}". Based on the document and available information, construct a relevant and accurate response to the user's query. If the document doesn't directly answer the query, politely explain what the document covers, express empathy for the user's situation, and suggest any alternative actions or resources that might be helpful.`
         console.log(prompt);
         const report = await model.generateContent(prompt);
         console.log("text",report.response.text);
@@ -124,5 +125,6 @@ router.post('/qna',async(req,res)=>{
     }
     
 });
+
 
 module.exports = router;
