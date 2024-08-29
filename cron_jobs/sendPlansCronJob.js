@@ -50,9 +50,9 @@ function scheduleWeeklyPlans(client) {
 }
 
 // function scheduleWeeklyPlans(client) {
-//     // Schedule the cron job to run every 5 minutes for testing
-//     cron.schedule('*/5 * * * *', async () => {
-//       console.log('Running weekly plans cron job (testing every 5 minutes)');
+//     // Schedule the cron job  for testing
+//     cron.schedule('*/3 * * * *', async () => {
+//       console.log('Testing Cron Job for Plans Generation');
 //       await sendWeeklyPlans(client);
 //     });
 //   }

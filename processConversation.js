@@ -162,88 +162,128 @@ function splitIntoChunks(text, maxLength) {
 }
 
 async function processConversation({ message, messageContent, analyze }) {
-    try {
-        console.log("line 51 : ", message.reply);
-        const typingInterval = 2000;
-        let typingIntervalId;
+  try {
+      console.log("Processing conversation with analyze flag:", analyze);
 
-        // Start the typing indicator
-        const startTyping = async () => {
-            typingIntervalId = setInterval(() => {
-                message.channel.sendTyping();
-            }, typingInterval);
-        };
+      const typingInterval = 2000;
+      let typingIntervalId;
 
-        // Stop the typing indicator
-        const stopTyping = () => {
-            clearInterval(typingIntervalId);
-        };
+      const startTyping = async () => {
+          typingIntervalId = setInterval(() => {
+              if (message.channel.sendTyping) {
+                  message.channel.sendTyping();
+              }
+          }, typingInterval);
+      };
 
-        await startTyping();
-        if (analyze) {
-            // console.log("message idhar",message)
-            await message.deferReply({ ephemeral: true });
-            const model = await genAI.getGenerativeModel({ model: config.modelName });
-            const chat = model.startChat({
-              safetySettings: config.safetySettings,
-            });
-            const result = await chat.sendMessage(messageContent);
-            let finalResponse = result.response.text();
-        
-            // Trim the response to a maximum of 1700 words
-            finalResponse = trimTo1700Words(finalResponse);
+      const stopTyping = () => {
+          clearInterval(typingIntervalId);
+      };
 
-            console.log("checking trim length : ",finalResponse.length)
-        
-            // Split the response into chunks of 2000 characters or less
-            const chunks = splitIntoChunks(finalResponse, 1000);
+      await startTyping();
 
-            console.log("chunks : ",chunks)
-
-            finalResponse = ""
-
-            // Edit the reply with each chunk
-            for (const chunk of chunks) {
-              finalResponse += chunk;
-              await message.editReply({ content: finalResponse });
-              // Optionally add a delay to avoid hitting rate limits
-              await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-        
-            // Create PDF and send it to Discord
-            const pdfPath = await createPDF(finalResponse);
-            console.log(finalResponse)
-            console.log('PDF created:', pdfPath);
-            const attachment = new AttachmentBuilder(fs.readFileSync(pdfPath), { name: 'response.pdf' });
-
-            // Send the message with the PDF attachment
-            await message.user.send({
-                content: "Here's your report:",
-                files: [attachment]
-            });
-              
-            // await sendPDFToDiscord(pdfPath, message.channelId, process.env.DISCORD_BOT_TOKEN);
-        
-            // Clean up
-            // fs.unlinkSync(pdfPath); // Delete the PDF file after sending
-            console.log('PDF sent to Discord and deleted.');
-        
-            await stopTyping();
+      const safeReply = async (content) => {
+          if (message.deferReply && !message.deferred && !message.replied) {
+              try {
+                  await message.deferReply({ ephemeral: true });
+              } catch (error) {
+                  if (error.code !== 'InteractionAlreadyReplied') {
+                      throw error;
+                  }
+              }
+          } else if (message.editReply) {
+              await message.editReply(content);
           } else {
-            const model = await genAI.getGenerativeModel({ model: config.modelName });
-            const chat = model.startChat({
-                history: conversationManager.getHistory(message.author.id),
-                safetySettings: config.safetySettings,
-            });
-            const botMessage = await message.reply('> `Generating a response...`');
-            await conversationManager.handleModelResponse(botMessage, () => chat.sendMessageStream(messageContent), message);
-            
-            await stopTyping();
-        }
-    } catch (error) {
-        console.error('Error processing the conversation:', error);
-        await message.reply('Sorry, something went wrong!');
-    }
+              await message.reply(content);
+          }
+      };
+
+      if (analyze) {
+          if (message.deferReply && !message.deferred && !message.replied) {
+              try {
+                  await message.deferReply({ ephemeral: true });
+              } catch (error) {
+                  if (error.code !== 'InteractionAlreadyReplied') {
+                      throw error;
+                  }
+              }
+          }
+
+          console.log('Starting analysis with message content length:', messageContent.length);
+
+          const model = await genAI.getGenerativeModel({ model: config.modelName });
+          const chat = model.startChat({
+              safetySettings: config.safetySettings,
+          });
+
+          const result = await chat.sendMessage(messageContent);
+          let finalResponse = result.response.text();
+          console.log("Received response length:", finalResponse.length);
+
+          finalResponse = trimTo1700Words(finalResponse);
+          console.log("Trimmed response length:", finalResponse.length);
+
+          const chunks = splitIntoChunks(finalResponse, 1000);
+          console.log("Chunks generated:", chunks.length);
+
+          finalResponse = "";
+
+          for (const chunk of chunks) {
+              finalResponse += chunk;
+              await safeReply({ content: finalResponse });
+              await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+
+          const pdfPath = await createPDF(finalResponse);
+          console.log('PDF created:', pdfPath);
+
+          const attachment = new AttachmentBuilder(fs.readFileSync(pdfPath), { name: 'response.pdf' });
+
+          await message.user.send({
+              content: "Here's your report:",
+              files: [attachment]
+          });
+
+          console.log('PDF sent to Discord.');
+
+          await stopTyping();
+      } else {
+          const model = await genAI.getGenerativeModel({ model: config.modelName });
+          const chat = model.startChat({
+              history: conversationManager.getHistory(message.author.id),
+              safetySettings: config.safetySettings,
+          });
+
+          let responseText = '';
+
+          if (message.deferReply && !message.deferred && !message.replied) {
+              try {
+                  await message.deferReply();
+              } catch (error) {
+                  if (error.code !== 'InteractionAlreadyReplied') {
+                      throw error;
+                  }
+              }
+          }
+
+          const response = await chat.sendMessage(messageContent);
+          responseText = response.response.text();
+
+          await safeReply(responseText);
+
+          await stopTyping();
+      }
+  } catch (error) {
+      console.error('Error processing the conversation:', error);
+      await safeReply('Sorry, something went wrong!');
+  }
 }
+
+module.exports = processConversation;
+
+
+module.exports = processConversation;
+
+
 
 module.exports = processConversation;

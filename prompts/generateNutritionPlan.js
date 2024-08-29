@@ -2,6 +2,7 @@ const mysql = require('mysql2/promise');
 const dbConfig = require('../dbConfig');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { sendICSConfirmation } = require('../events/sendICSConfirmation');
+const axios = require('axios');
 
 const fitnessCoachPool = mysql.createPool(dbConfig.fitness_coach);
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
@@ -52,6 +53,12 @@ async function generateNutritionPlan(user, client) {
         const content = result.response.text();
 
         await sendInChunks(dmChannel, content); // Send in chunks
+
+        // Save the nutrition plan in the database
+        await axios.post('http://localhost:3000/users/savePlan', {
+            username: user.username,
+            nutrition_plan: content,
+        });
 
         // Store the generated nutrition plan content for ICS generation
         user.nutritionPlanContent = content;
