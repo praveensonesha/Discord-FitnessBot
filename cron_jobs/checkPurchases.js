@@ -28,7 +28,7 @@ const checkUserPurchases = async () => {
     const invoiceQuery = `
       SELECT u.mobile AS mobile, GROUP_CONCAT(pdc.product_name) AS products
       FROM customer_invoices ci
-      LEFT JOIN users u ON u.id = ci.user_id
+      LEFT JOIN cube_user u ON u.id = ci.user_id
       LEFT JOIN product_details_cubeclub pdc ON pdc.SKU_code = ci.SKU_code
       WHERE JSON_CONTAINS(?, JSON_QUOTE(u.mobile))
       GROUP BY u.id;
