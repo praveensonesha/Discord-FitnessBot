@@ -57,7 +57,7 @@ async function generateWorkoutPlan(user, client) {
         await sendInChunks(dmChannel, content); // Send in chunks
 
         // Save the workout plan in the database
-        await axios.post('http://localhost:3000/users/savePlan', {
+        await axios.post('https://discord-fitnessbot.onrender.com/users/savePlan', {
             username: user.username,
             workout_plan: content,
         });

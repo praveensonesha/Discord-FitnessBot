@@ -182,7 +182,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     try {
       await interaction.deferReply(); 
       const query = interaction.options.getString('query');
-      const response = await axios.post('http://localhost:3000/chats/qna', { query });
+      const response = await axios.post('https://discord-fitnessbot.onrender.com/chats/qna', { query });
       await interaction.editReply(response.data);
     } catch (error) {
       console.error('Error handling /faq command:', error);
@@ -227,7 +227,7 @@ client.on(Events.MessageCreate, async (message) => {
           return null;
         }
       }));
-      const storeInDatabase = await fetch("http://localhost:3000/chats", {
+      const storeInDatabase = await fetch("https://discord-fitnessbot.onrender.com/chats", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -270,7 +270,7 @@ client.on(Events.MessageCreate, async (message) => {
           return null;
         }
       }));
-      const response = await fetch(`http://localhost:3000/chats/chat?userId=${message.author.id}&channelId=${message.channelId}`);
+      const response = await fetch(`https://discord-fitnessbot.onrender.com/chats/chat?userId=${message.author.id}&channelId=${message.channelId}`);
 
       const data = await response.json();
       console.log(data)
@@ -294,7 +294,7 @@ client.on(Events.MessageCreate, async (message) => {
 
       console.log("This is the prompt that goes with tagging : ",messageContent)
       conversationQueue.push({ message, messageContent,analyze:false });
-      const storeInDatabase = await fetch("http://localhost:3000/chats", {
+      const storeInDatabase = await fetch("https://discord-fitnessbot.onrender.com/chats", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
