@@ -23,7 +23,7 @@
         "pdf-parse": "^1.1.1"
     },
     "scripts": {
-        "start": "nodemon index.js",
+        "start": "node index.js",
         "start:deploy": "nodemon index.js && node deploy-command.js"
     }
 }
