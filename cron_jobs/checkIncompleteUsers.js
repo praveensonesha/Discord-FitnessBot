@@ -29,7 +29,7 @@ const checkIncompleteUserrrr = async (client) => {
           console.log("member",member);
           collectUserDetails(member, dmChannel, async (details) => {
             try {
-              const response = await axios.post('http://localhost:3000/users/userDetails', details);
+              const response = await axios.post('https://discord-fitnessbot.onrender.com/users/userDetails', details);
               if (response.status === 200) {
                 dmChannel.send("Your details have been successfully saved!");
               } else {

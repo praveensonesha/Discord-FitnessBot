@@ -11,7 +11,7 @@ const handleNewMemberEvent = async (member,client) => {
       username: member.user.username,
     };
     try {
-         await axios.post('http://localhost:3000/users/addUser', newUser);
+         await axios.post('https://discord-fitnessbot.onrender.com/users/addUser', newUser);
       } catch (error) {
         console.error('Error sending user details to server:', error);
       }
@@ -41,7 +41,7 @@ const handleNewMemberEvent = async (member,client) => {
 
       collectUserDetails(member.user, dmChannel, async (details) => {
           try {
-              const response = await axios.post('http://localhost:3000/users/userDetails', details);
+              const response = await axios.post('https://discord-fitnessbot.onrender.com/users/userDetails', details);
               if (response.status === 200) {
                   await dmChannel.send("🎉 Your details have been successfully saved! Thank you for providing all the information. 💪");
 
