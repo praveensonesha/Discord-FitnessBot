@@ -123,7 +123,7 @@ class CommandHandler {
     try {
         await interaction.deferReply({ ephemeral: true });
         // Make sure to include the user_id as a query parameter
-        const response = await fetch(`http://localhost:3000/users/score`,{
+        const response = await fetch(`https://discord-fitnessbot.onrender.com/users/score`,{
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
