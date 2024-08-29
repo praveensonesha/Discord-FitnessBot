@@ -6,40 +6,61 @@ const dbConfig = require('../dbConfig'); // Import your configuration
 const fitnessCoachPool = mysql.createPool(dbConfig.fitness_coach);
 const cubeClubPool = mysql.createPool(dbConfig.cube_club);
 
-async function checkUserPurchases() {
-    try {
-        console.log('Checking user purchases...');
-        
-        // Fetch users from fitness_coach
-        const [fitnessUsers] = await fitnessCoachPool.query('SELECT mobile_no FROM users');
+// Function to check and update user purchases
+const checkUserPurchases = async () => {
 
-        for (const fitnessUser of fitnessUsers) {
-            const mobileNo = fitnessUser.mobile_no;
+  try {
+    console.log('Checking user purchases...');
+    // Query to get mobile numbers from fitness_coach users
+    const userQuery = `
+      SELECT mobile_no FROM users;
+    `;
+    
+    // Fetch user mobile numbers
+    const [rows] = await fitnessCoachPool.query(userQuery);
+    const normalizedPhones = rows.map(row => row.mobile_no.slice(-10)); // Normalize phone numbers
+    const jsonPhones = JSON.stringify(normalizedPhones);
+    
+    console.log("Normalized phones:", normalizedPhones);
+    console.log("JSON phones:", jsonPhones);
 
-            // Find matching user in cube_club
-            const [cubeUser] = await cubeClubPool.query('SELECT id FROM users WHERE mobile = ?', [mobileNo]);
-            
-            if (cubeUser.length > 0) {
-                const userId = cubeUser[0].id;
+    // Invoice query to get products bought by each user
+    const invoiceQuery = `
+      SELECT u.mobile AS mobile, GROUP_CONCAT(pdc.product_name) AS products
+      FROM customer_invoices ci
+      LEFT JOIN users u ON u.id = ci.user_id
+      LEFT JOIN product_details_cubeclub pdc ON pdc.SKU_code = ci.SKU_code
+      WHERE JSON_CONTAINS(?, JSON_QUOTE(u.mobile))
+      GROUP BY u.id;
+    `;
+    
+    // Fetch invoice data
+    const [invoiceRows] = await cubeClubPool.query(invoiceQuery, [jsonPhones]);
+    console.log("Invoice rows:", invoiceRows);
 
-                // Check if the user has invoices
-                const [invoices] = await cubeClubPool.query('SELECT * FROM customer_invoices WHERE user_id = ?', [userId]);
+    // Prepare and execute update queries
+    const updatePromises = invoiceRows.map(async (user) => {
+      const updateProductQuery = `
+        UPDATE users
+        SET equipment = ?
+        WHERE mobile_no = ?;
+      `;
+      // Use parameterized queries to prevent SQL injection
+      await fitnessCoachPool.query(updateProductQuery, [user.products, user.mobile]);
+    });
 
-                if (invoices.length > 0) {
-                    console.log(`User with mobile number ${mobileNo} has made purchases.`);
-                } else {
-                    console.log(`User with mobile number ${mobileNo} has not made any purchases.`);
-                }
-            } else {
-                console.log(`No matching user found in cube_club for mobile number ${mobileNo}.`);
-            }
-        }
-    } catch (error) {
-        console.error('Error checking user purchases:', error);
-    }
-}
+    // Wait for all update queries to complete
+    await Promise.all(updatePromises);
 
-// Schedule the cron job to run every day at 12 PM
-cron.schedule('0 12 * * *', checkUserPurchases);
+  } catch (err) {
+    console.error("Error in checkUserPurchases:", err);
+  }
+};
 
+// Schedule the cron job to run daily at 10 AM
+cron.schedule('0 10 * * *', () => {
+    console.log('Running synchronization at scheduled time');
+    checkUserPurchases();
+  });
+  
 module.exports = checkUserPurchases;

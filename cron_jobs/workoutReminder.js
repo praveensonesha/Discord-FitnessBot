@@ -89,7 +89,7 @@ async function sendReminder(client, userId) {
 
 function workoutReminder(client) {
   // Schedule the cron job to run every day at 9 AM
-  cron.schedule('*/25 * * * *', async () => {
+  cron.schedule('0 9 * * *', async () => {
     console.log('Running workout reminder cron job');
     try {
       const usersWithoutWorkout = await getUsersWithoutWorkout();

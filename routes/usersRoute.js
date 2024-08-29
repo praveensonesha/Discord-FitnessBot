@@ -83,7 +83,7 @@ router.post('/userDetails', (req, res) => {
 
 router.post('/score', (req, res) => {
         const { user_id } = req.body;
-        console.log("Score provided to user_id",user_id);
+        console.log("Score Provided to user_id",user_id);
     
         if (!user_id) {
             return res.status(400).json({ error: 'User ID is required' });
@@ -106,6 +106,64 @@ router.post('/score', (req, res) => {
     
             res.status(200).json(results[0]);
         });
+});
+
+router.post('/savePlan', (req, res) => {
+    const { username, workout_plan, nutrition_plan } = req.body;
+
+    if (!username || (!workout_plan && !nutrition_plan)) {
+        return res.status(400).json({ error: 'Username and at least one plan (workout/nutrition) are required' });
+    }
+
+    const sql = `
+        INSERT INTO plans (username, workout_plan, nutrition_plan)
+        VALUES (?, ?, ?)
+        ON DUPLICATE KEY UPDATE 
+            workout_plan = COALESCE(VALUES(workout_plan), workout_plan),
+            nutrition_plan = COALESCE(VALUES(nutrition_plan), nutrition_plan),
+            updated_at = CURRENT_TIMESTAMP
+    `;
+
+    const values = [username, workout_plan, nutrition_plan];
+
+    fitnessCoachPool.query(sql, values, (error, results) => {
+        if (error) {
+            console.error('Error saving plan to the database:', error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        res.status(200).json({ message: 'Plan saved successfully' });
+    });
+});
+
+
+router.post('/plans/:planType', (req, res) => {
+    const { userId } = req.body;
+    const { planType } = req.params;
+
+    if (!['workout', 'nutrition'].includes(planType)) {
+        return res.status(400).json({ error: 'Invalid plan type' });
+    }
+
+    const sql = `
+        SELECT ${planType === 'workout' ? 'workout_plan' : 'nutrition_plan'} AS plan
+        FROM plans p
+        left join users u on u.username = p.username 
+        WHERE u.user_id = ?;
+    `;
+
+    fitnessCoachPool.query(sql, [userId], (error, results) => {
+        if (error) {
+            console.error('Error fetching plan:', error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Plan not found' });
+        }
+
+        res.status(200).json(results[0]);
+    });
 });
 
 module.exports = router;

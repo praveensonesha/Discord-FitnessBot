@@ -8,27 +8,47 @@ const commands = [
     .setDMPermission(true),
   new SlashCommandBuilder()
     .setName('analyze')
-    .setDescription('Analyzes your channel.')
+    .setDescription('Analyzes your Weekly Workouts.')
+    .addStringOption(option =>
+      option.setName('report_type')
+        .setDescription('Type of report to generate')
+        .setRequired(true)
+        .addChoices(
+          { name: 'Individual Report', value: 'individual' },
+          { name: 'Community Report', value: 'community' }
+        ))
     .setDMPermission(true),
   new SlashCommandBuilder()
     .setName('log')
-    .setDescription('Log your workout stats.')
+    .setDescription('Log your Workout Stats.')
     .addStringOption(option =>
       option.setName('stats')
-        .setDescription('Your workout stats')
+        .setDescription('Your Workout Stats')
         .setRequired(true))
     .setDMPermission(true),
   new SlashCommandBuilder()
     .setName('score')
-    .setDescription('Get your fitness Score.')
+    .setDescription('Get your Fitness Score.')
     .setDMPermission(true),
   new SlashCommandBuilder()
     .setName('faq')
-    .setDescription('Ask a frequently asked question.')
+    .setDescription('Ask a Frequently Asked Question.')
     .addStringOption(option =>
       option.setName('query')
         .setDescription('Your question')
         .setRequired(true))
+    .setDMPermission(true),
+  new SlashCommandBuilder()
+    .setName('getplans')
+    .setDescription('Retrieve your workout or nutrition plan.')
+    .addStringOption(option =>
+      option.setName('plan')
+        .setDescription('Select the plan you want to retrieve')
+        .setRequired(true)
+        .addChoices(
+          { name: 'Workout Plan', value: 'workout' },
+          { name: 'Nutrition Plan', value: 'nutrition' }
+        ))
     .setDMPermission(true),
 ].map(command => command.toJSON());
 

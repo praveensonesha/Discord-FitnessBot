@@ -61,18 +61,7 @@ const conversationQueue = async.queue(processConversation, 1);
 //crons jobs
 workoutReminder(client);
 checkIncompleteUsers(client);
-checkUserPurchases(); 
 scheduleWeeklyPlans(client);
-
-// generateWorkoutPlan();
-// generateNutritionPlan();
-
-// client.on('interactionCreate', async interaction => {
-//   if (interaction.type === InteractionType.ModalSubmit) {
-//       await handleModal(interaction);  // Call handleModal when a modal is submitted
-//   }
-// });
-
 
 const activities = [
   { name: 'Assisting users', type: ActivityType.Playing },
@@ -132,25 +121,61 @@ client.on(Events.InteractionCreate, async (interaction) => {
     return;
   }
 
+  // if (interaction.commandName === 'analyze') {
+  //   try {
+  //     if (commandName === 'analyze') {
+  //       // Check if interaction is a command and use interaction.options to get arguments
+  //       const reportType = interaction.options.getString('type'); // Adjust based on your command's options
+
+  //       if (!reportType) {
+  //           await interaction.reply('> `Please provide a report type: "individual" or "community".`');
+  //           return;
+  //       }
+
+  //       // Call the analyzeCommand function with interaction and arguments
+  //       await commandHandler.analyzeCommand(interaction, [reportType], conversationManager);
+  //   }
+  //   } catch (error) {
+  //     console.error('Error handling /analyze command:', error);
+  //     try {
+  //       await interaction.reply('Sorry, something went wrong while saving your conversation.');
+  //     } catch (replyError) {
+  //       console.error('Error sending error message:', replyError);
+  //     }
+  //   }
+  //   return;
+  // }  
 
   if (interaction.commandName === 'analyze') {
     try {
-      console.log("interaction : ",interaction.reply)
-      await commandHandler.analyzeCommand(interaction, [], conversationManager);
+        await interaction.deferReply();
+        const reportType = interaction.options.getString('report_type');
 
+        if (!reportType) {
+            await interaction.reply('> `Please provide a report type: "individual" or "community".`');
+            return;
+        }
+
+        // Call the analyzeCommand function with interaction and arguments
+        await commandHandler.analyzeCommand(interaction, [reportType], conversationManager);
     } catch (error) {
-      console.error('Error handling /analyze command:', error);
-      try {
-        await interaction.reply('Sorry, something went wrong while saving your conversation.');
-      } catch (replyError) {
-        console.error('Error sending error message:', replyError);
-      }
+        console.error('Error handling /analyze command:', error);
+        try {
+            await interaction.reply('Sorry, something went wrong while processing your analyze command.');
+        } catch (replyError) {
+            console.error('Error sending error message:', replyError);
+        }
     }
     return;
-  }  
+}
+
 
   if (interaction.commandName === 'score') {
     await commandHandler.scoreCommand(interaction);
+  }
+
+  if (interaction.commandName === 'getplans') {
+    await commandHandler.getPlansCommand(interaction);
   }
 
   if (interaction.commandName === 'faq') {
@@ -172,24 +197,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 });
 
-client.on(Events.GuildMemberAdd,handleNewMemberEvent)
+client.on(Events.GuildMemberAdd,(member)=>handleNewMemberEvent(member,client))
 
 client.on(Events.MessageCreate, async (message) => {
   try {
     if (message.author.bot) return;
     console.log("message log for attachment type : ",message)
-   
-    // const response = await fetch(`http://localhost:3000/chats/chat?userId=${message.author.id}&channelId=${message.channelId}`);
-
-    // const data = await response.json();
-
-    // console.log(data)
-
-    // let finalQuery = ""
-
-    // data.forEach(item => {
-    //   finalQuery += item.message + '.'
-    // });
 
     // Convert attachments to Base64
     
@@ -230,25 +243,6 @@ client.on(Events.MessageCreate, async (message) => {
       });
     }
 
-    // // Filter out null attachments
-    // let filteredAttachments = attachments.filter(Boolean);
-    // if(!filteredAttachments){
-    //   filteredAttachments = [];
-    // }
-    // const storeInDatabase = await fetch("http://localhost:3000/chats", {
-    //   method: 'POST',
-    //   headers: {
-    //       'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify([{
-    //     user_id:message.author.id,
-    //     author:message.author.username,
-    //     message:message.content,
-    //     message_id:message.id,
-    //     channelId:message.channelId,
-    //     attachments:filteredAttachments,
-    //   }]),
-    // });
 
     const isDM = message.channel.type === ChannelType.DM;
     
@@ -276,28 +270,15 @@ client.on(Events.MessageCreate, async (message) => {
           return null;
         }
       }));
-    //  console.log("attachments for testing line 243",attachments)
-      // // Filter out null attachments
-      // let filteredAttachments = attachments.filter(Boolean);
-      // if(!filteredAttachments){
-      //   filteredAttachments = [];
-      // }
-      
       const response = await fetch(`http://localhost:3000/chats/chat?userId=${message.author.id}&channelId=${message.channelId}`);
 
       const data = await response.json();
-
       console.log(data)
-
       let finalQuery = ""
-
       console.log(data)
-
       data.forEach(item => {
         finalQuery += item.message + '.' + "attachments : "+item.attachments
       });
-
-      
 
       let messageContent = message.content.replace(new RegExp(`<@!?${client.user.id}>`), '').trim();
 

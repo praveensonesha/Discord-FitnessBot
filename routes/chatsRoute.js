@@ -13,52 +13,85 @@ const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 const fitnessCoachPool = mysql.createPool(dbConfig.fitness_coach);
 router.use(express.json());
 
+// router.get('/chat', (req, res) => {
+//     const userId = req.query.userId; // assuming userId is passed as a query parameter
+//     const channelId = req.query.channelId;
+//     console.log("channelId : ",channelId)
+//     if(userId && channelId){
+
+//         const sql = 'SELECT message,attachments FROM chats WHERE user_id = ? and channel_id = ?';
+    
+//         fitnessCoachPool.query(sql, [userId,channelId], (error, results) => {
+//             if (error) {
+//                 console.error('Error executing query:', error);
+//                 res.status(500).json({ message: 'Internal server error' });
+//             } else {
+//                 res.status(200).json(results);
+//             }
+//         });
+
+//     }
+//     else if(userId && !channelId){
+
+//         const sql = 'SELECT message FROM chats WHERE user_id = ?';
+    
+//         fitnessCoachPool.query(sql, [userId], (error, results) => {
+//             if (error) {
+//                 console.error('Error executing query:', error);
+//                 res.status(500).json({ message: 'Internal server error' });
+//             } else {
+//                 res.status(200).json(results);
+//             }
+//         });
+
+//     }
+//     else if(!userId && channelId){
+
+//         const sql = 'SELECT author,created_at,message FROM chats WHERE channel_id = ?';
+    
+//         fitnessCoachPool.query(sql, [channelId], (error, results) => {
+//             if (error) {
+//                 console.error('Error executing query:', error);
+//                 res.status(500).json({ message: 'Internal server error' });
+//             } else {
+//                 res.status(200).json(results);
+//             }
+//         });
+
+//     }
+// });
+
+// Fetch chat logs based on filters
+
 router.get('/chat', (req, res) => {
-    const userId = req.query.userId; // assuming userId is passed as a query parameter
+    const userId = req.query.userId;
     const channelId = req.query.channelId;
-    console.log("channelId : ",channelId)
-    if(userId && channelId){
 
-        const sql = 'SELECT message,attachments FROM chats WHERE user_id = ? and channel_id = ?';
-    
-        fitnessCoachPool.query(sql, [userId,channelId], (error, results) => {
-            if (error) {
-                console.error('Error executing query:', error);
-                res.status(500).json({ message: 'Internal server error' });
-            } else {
-                res.status(200).json(results);
-            }
-        });
+    let sql = '';
+    const queryParams = [];
 
+    if (userId && channelId) {
+        sql = 'SELECT author, message, attachments FROM chats WHERE user_id = ? AND channel_id = ? AND is_log = 1';
+        queryParams.push(userId, channelId);
+    } else if (userId) {
+        sql = 'SELECT author, message FROM chats WHERE user_id = ? AND is_log = 1';
+        queryParams.push(userId);
+    } else if (channelId) {
+        sql = 'SELECT author, created_at, message FROM chats WHERE channel_id = ? AND is_log = 1';
+        queryParams.push(channelId);
+    } else {
+        return res.status(400).json({ message: 'UserId or ChannelId must be provided' });
     }
-    else if(userId && !channelId){
 
-        const sql = 'SELECT message FROM chats WHERE user_id = ?';
-    
-        fitnessCoachPool.query(sql, [userId], (error, results) => {
-            if (error) {
-                console.error('Error executing query:', error);
-                res.status(500).json({ message: 'Internal server error' });
-            } else {
-                res.status(200).json(results);
-            }
-        });
-
-    }
-    else if(!userId && channelId){
-
-        const sql = 'SELECT author,created_at,message FROM chats WHERE channel_id = ?';
-    
-        fitnessCoachPool.query(sql, [channelId], (error, results) => {
-            if (error) {
-                console.error('Error executing query:', error);
-                res.status(500).json({ message: 'Internal server error' });
-            } else {
-                res.status(200).json(results);
-            }
-        });
-
-    }
+    fitnessCoachPool.query(sql, queryParams, (error, results) => {
+        if (error) {
+            console.error('Error executing query:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        } else {
+            console.log("Query results:", results); 
+            res.status(200).json(results);
+        }
+    });
 });
 
 router.post('/', (req, res) => {
