@@ -46,13 +46,13 @@ class CommandHandler {
         let finalQuery = "";
 
         if (reportType === 'individual') {
-            const response = await fetch(`https://discord-fitnessbot.onrender.com/chats/chat?userId=${userId}`);
+            const response = await fetch(`http://localhost:3000/chats/chat?userId=${userId}`);
             const data = await response.json();
             data.forEach(item => {
               finalQuery += `{Author:${item.author} ,Logs: ${item.message} `;
             });
         } else if (reportType === 'community') {
-            const response = await fetch(`https://discord-fitnessbot.onrender.com/chats/chat?channelId=${channelId}`);
+            const response = await fetch(`http://localhost:3000/chats/chat?channelId=${channelId}`);
             const data = await response.json();
             console.log(data);
             data.forEach(item => {
@@ -90,7 +90,7 @@ class CommandHandler {
     }
 
     try {
-      const response = await fetch('https://discord-fitnessbot.onrender.com/chats', {
+      const response = await fetch('http://localhost:3000/chats', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ class CommandHandler {
     try {
         await interaction.deferReply({ ephemeral: true });
         // Make sure to include the user_id as a query parameter
-        const response = await fetch(`https://discord-fitnessbot.onrender.com/users/score`,{
+        const response = await fetch(`http://localhost:3000/users/score`,{
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ class CommandHandler {
     const userId = interaction.user.id;
 
     try {
-        const response = await axios.post(`https://discord-fitnessbot.onrender.com/users/plans/${planType}`, {
+        const response = await axios.post(`http://localhost:3000/users/plans/${planType}`, {
             userId: userId
         });
         const planData = response.data;

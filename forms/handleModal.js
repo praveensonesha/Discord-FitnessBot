@@ -22,7 +22,7 @@ const handleModal = async (interaction) => {
 
         try {
             // Send the collected details to the Express server
-            await axios.post('https://discord-fitnessbot.onrender.com/userDetails', details);
+            await axios.post('http://localhost:3000/userDetails', details);
 
             // Acknowledge the user
             await interaction.reply({ content: 'Thank you for providing your details!', ephemeral: true });
