@@ -2,7 +2,6 @@ const { ChannelType } = require('discord.js');
 const processConversation = require("./processConversation");
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const async = require('async');
-const { rsvgVersion } = require('canvas');
 const axios = require('axios');
 class CommandHandler {
   constructor() {
