@@ -71,6 +71,19 @@ This guide will walk you through the process of setting up and running the Fitne
     DISCORD_BOT_TOKEN=YOUR_DISCORD_BOT_TOKEN
     DISCORD_CLIENT_ID=YOUR_DISCORD_CLIENT_ID
     GOOGLE_API_KEY=YOUR_GOOGLE_API_KEY
+
+    # Fitness Coach Database
+    DB_HOST_1=YOUR_DB_HOST_1
+    DB_NAME_1=YOUR_DB_NAME_1
+    DB_USERNAME_1=YOUR_DB_USERNAME_1
+    DB_PASS_1=YOUR_DB_PASS_1
+
+    # Cube Club Database
+    DB_HOST_2=YOUR_DB_HOST_2
+    DB_NAME_2=YOUR_DB_NAME_2
+    DB_USERNAME_2=YOUR_DB_USERNAME_2
+    DB_PASS_2=YOUR_DB_PASS_2
+
     ```
 
     - You can obtain your bot token and client ID from the [Discord Developer Portal](https://discord.com/developers/docs/intro).
