@@ -15,6 +15,7 @@ const checkIncompleteUsers = require('./cron_jobs/checkIncompleteUsers');
 const workoutReminder = require('./cron_jobs/workoutReminder');
 const checkUserPurchases = require('./cron_jobs/checkPurchases');
 const scheduleWeeklyPlans = require('./cron_jobs/sendPlansCronJob');
+const serverActive = require('./cron_jobs/serverActive');
 const generateWorkoutPlan = require('./prompts/generateWorkoutPlan');
 const generateNutritionPlan = require('./prompts/generateNutritionPlan');
 const { handleModal } = require('./forms/handleModal');  // Import the handleModal function
@@ -62,6 +63,7 @@ const conversationQueue = async.queue(processConversation, 1);
 workoutReminder(client);
 checkIncompleteUsers(client);
 scheduleWeeklyPlans(client);
+serverActive();
 
 const activities = [
   { name: 'Assisting users', type: ActivityType.Playing },
