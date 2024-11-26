@@ -63,7 +63,7 @@ const conversationQueue = async.queue(processConversation, 1);
 workoutReminder(client);
 checkIncompleteUsers(client);
 scheduleWeeklyPlans(client);
-serverActive();
+// serverActive();
 
 const activities = [
   { name: 'Assisting users', type: ActivityType.Playing },
